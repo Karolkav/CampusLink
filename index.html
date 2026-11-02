@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusLink | Encontre seus amigos. Encontre seu ônibus.</title>
+<style>
+:root{
+  --green:#609d8c;--green-dark:#2e5f56;--green-soft:#e6f1ed;
+  --cream:#f8ece0;--ink:#243b37;--muted:#71817c;--white:#fff;
+  --line:#e4eae7;--red:#bd5b5b;--shadow:0 8px 24px rgba(37,76,65,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7f5;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1120px;min-height:100vh;margin:auto;background:#fff;box-shadow:var(--shadow)}
+header{background:var(--green-dark);color:#fff;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;background:#fff;color:var(--green-dark);display:grid;place-items:center;font-size:23px;font-weight:bold}
+.brand h1{font-size:22px;margin:0}.brand p{margin:4px 0 0;font-size:12px;opacity:.85}
+.user-chip{font-size:13px;background:rgba(255,255,255,.13);padding:9px 13px;border-radius:20px}
+nav{display:flex;gap:6px;padding:12px 18px;border-bottom:1px solid var(--line);overflow-x:auto;background:#fff;position:sticky;top:0;z-index:5}
+nav button{border:0;background:transparent;color:var(--muted);padding:11px 14px;border-radius:10px;white-space:nowrap;font-weight:600}
+nav button.active,nav button:hover{background:var(--green-soft);color:var(--green-dark)}
+main{padding:24px}
+.welcome{background:var(--cream);border-radius:18px;padding:22px;margin-bottom:20px}
+.welcome h2{margin:0 0 7px;font-size:23px}.welcome p{margin:0;color:#5f706a}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 3px 12px rgba(37,76,65,.035)}
+.card h3{margin:0 0 14px;font-size:17px;color:var(--green-dark)}
+.card p{color:var(--muted);line-height:1.5}
+.stat{font-size:27px;font-weight:700;color:var(--green-dark);margin:5px 0}
+.small{font-size:12px;color:var(--muted)}
+.btn{border:0;background:var(--green-dark);color:#fff;padding:11px 15px;border-radius:10px;font-weight:600}
+.btn:hover{background:#244d45}.btn.secondary{background:var(--green-soft);color:var(--green-dark)}
+.btn.danger{background:#faeaea;color:#9d4242}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.list{display:flex;flex-direction:column;gap:10px}
+.person,.bus{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid var(--line);border-radius:12px}
+.avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;display:grid;place-items:center;background:var(--green-soft);color:var(--green-dark);font-weight:bold}
+.person strong,.bus strong{display:block}.person span,.bus span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.right{margin-left:auto;text-align:right}
+.tag{font-size:11px;padding:5px 8px;border-radius:20px;background:var(--green-soft);color:var(--green-dark);white-space:nowrap}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+input,select{width:100%;padding:11px;border:1px solid #d9e2de;border-radius:9px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #b6d6ca;border-color:var(--green)}
+.field{margin-bottom:12px}
+.map{height:245px;border-radius:14px;position:relative;overflow:hidden;background:linear-gradient(90deg,transparent 48%,rgba(255,255,255,.85) 49%,rgba(255,255,255,.85) 52%,transparent 53%),linear-gradient(0deg,transparent 47%,rgba(255,255,255,.85) 48%,rgba(255,255,255,.85) 52%,transparent 53%),#e5efe8}
+.map:before,.map:after{content:"";position:absolute;background:#c8dfd1;border-radius:40px;transform:rotate(-22deg)}
+.map:before{width:130%;height:35px;top:40%;left:-10%}.map:after{width:30px;height:140%;top:-20%;left:68%;transform:rotate(24deg)}
+.place{position:absolute;z-index:1;background:#fff;border:1px solid #d5e2da;border-radius:9px;padding:7px 9px;font-size:11px;box-shadow:0 3px 8px #0001}
+.pin{position:absolute;z-index:2;width:34px;height:34px;border-radius:50%;background:var(--green-dark);color:#fff;display:grid;place-items:center;border:3px solid #fff;font-size:12px;font-weight:bold;box-shadow:0 2px 7px #0002}
+.notice{padding:12px;background:#f5f8f6;border-radius:10px;color:#63736d;font-size:12px;line-height:1.5;margin-top:12px}
+.toggle-line{padding:13px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}
+.toggle-line:last-child{border-bottom:0}
+.switch{width:44px;height:24px;appearance:none;background:#cbd5d0;border-radius:20px;position:relative;cursor:pointer;flex:0 0 44px}
+.switch:checked{background:var(--green)}
+.switch:before{content:"";position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:.2s}
+.switch:checked:before{left:23px}
+.chatbox{height:270px;overflow:auto;background:#f7faf8;border-radius:12px;padding:12px;margin-bottom:12px}
+.msg{max-width:88%;padding:10px 12px;border-radius:12px;margin:7px 0;font-size:13px;line-height:1.45}
+.bot{background:#e6f1ed}.mine{background:#dce9f4;margin-left:auto}
+.chat-input{display:flex;gap:8px}.chat-input input{flex:1}
+.page{display:none}.page.active{display:block}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px;border-top:1px solid var(--line)}
+.empty{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#243b37;color:white;padding:11px 16px;border-radius:10px;display:none;z-index:20;font-size:13px}
+@media(max-width:650px){
+ header{padding:17px}.brand h1{font-size:19px}.user-chip{display:none}
+ main{padding:16px}.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}
+ .welcome h2{font-size:20px}.card{padding:15px}
+ nav{padding:9px}nav button{padding:10px 12px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">C</div><div><h1>CampusLink</h1><p>Encontre seus amigos. Encontre seu ônibus. Chegue junto.</p></div></div>
+  <div class="user-chip" id="userChip">Olá, Ana Souza</div>
+</header>
+<nav aria-label="Navegação principal">
+  <button class="active" data-page="inicio">Início</button>
+  <button data-page="amigos">Amigos</button>
+  <button data-page="onibus">Ônibus</button>
+  <button data-page="privacidade">Privacidade</button>
+  <button data-page="atendimento">Atendimento</button>
+</nav>
+<main>
+<section class="page active" id="inicio">
+  <div class="welcome"><h2 id="welcomeTitle">Olá, Ana!</h2><p>Sua rotina universitária em um só lugar. Consulte seus amigos e organize sua volta para casa.</p></div>
+  <div class="grid">
+    <div class="card">
+      <div class="row"><h3>Amigos no campus</h3><span class="tag" id="sharingCount">3 compartilhando</span></div>
+      <div class="list" id="homeFriends"></div>
+      <button class="btn secondary" style="margin-top:13px" onclick="showPage('amigos')">Ver amigos no mapa</button>
+    </div>
+    <div class="card">
+      <div class="row"><h3>Próximo ônibus</h3><span class="tag">Demonstração</span></div>
+      <div class="stat" id="nextBusTime">19:15</div>
+      <p id="nextBusRoute">Campus → Centro · em 4 min</p>
+      <button class="btn secondary" onclick="showPage('onibus')">Consultar linhas e horários</button>
+    </div>
+    <div class="card">
+      <h3>Mapa do campus</h3>
+      <div class="map" aria-label="Mapa ilustrativo do campus">
+        <span class="place" style="top:12%;left:7%">Biblioteca</span>
+        <span class="place" style="top:68%;left:8%">Cantina</span>
+        <span class="place" style="top:15%;right:7%">Bloco A</span>
+        <span class="place" style="bottom:12%;right:7%">Ponto de ônibus</span>
+        <span class="pin" style="top:42%;left:28%">M</span><span class="pin" style="top:58%;left:57%">J</span><span class="pin" style="top:29%;left:76%">B</span>
+      </div>
+      <div class="notice">Mapa ilustrativo com locais e posições fictícios, conforme o protótipo do projeto.</div>
+    </div>
+    <div class="card">
+      <h3>Atalhos</h3>
+      <div class="list">
+        <button class="btn secondary" onclick="showPage('amigos')">＋ Adicionar amigos</button>
+        <button class="btn secondary" onclick="showPage('privacidade')">◉ Configurar privacidade</button>
+        <button class="btn secondary" onclick="showPage('atendimento')">？ Falar com o chatbot</button>
+      </div>
+      <p class="small">Você decide quando e com quem compartilhar sua localização.</p>
+    </div>
+  </div>
+</section>
+<section class="page" id="amigos">
+  <div class="row" style="margin-bottom:16px"><div><h2>Amigos no campus</h2><p class="small">Veja apenas as pessoas que aceitaram compartilhar a localização.</p></div><button class="btn" onclick="document.getElementById('addFriendForm').scrollIntoView({behavior:'smooth'})">Adicionar amigo</button></div>
+  <div class="grid">
+    <div class="card"><h3>Mapa dos amigos</h3>
+      <div class="map">
+        <span class="place" style="top:12%;left:7%">Biblioteca central</span><span class="place" style="bottom:12%;left:7%">Cantina do Bloco B</span><span class="place" style="top:15%;right:7%">Bloco C</span>
+        <span class="pin" style="top:43%;left:28%">M</span><span class="pin" style="top:59%;left:58%">J</span><span class="pin" style="top:28%;left:77%">B</span>
+      </div>
+      <div class="notice">As posições exibidas são fictícias e servem apenas para demonstrar a interface. O protótipo não acessa o GPS nem transmite localizaç��o real.</div>
+    </div>
+    <div class="card"><h3>Seus amigos</h3><div class="list" id="friendList"></div></div>
+  </div>
+  <div class="card" id="addFriendForm" style="margin-top:16px">
+    <h3>Adicionar amigo</h3>
+    <div class="form-grid"><div class="field"><label for="friendName">Nome do estudante</label><input id="friendName" placeholder="Ex.: Lucas Oliveira"></div><div class="field"><label for="friendPlace">Local no campus</label><select id="friendPlace"><option>Biblioteca central</option><option>Cantina do Bloco B</option><option>Bloco C - sala 12</option><option>Portaria principal</option></select></div></div>
+    <button class="btn" onclick="addFriend()">Adicionar à lista</button>
+  </div>
+</section>
+<section class="page" id="onibus">
+  <div class="row" style="margin-bottom:16px"><div><h2>Ônibus do campus</h2><p class="small">Consulte linhas, paradas e horários de demonstração.</p></div><span class="tag">Dados fictícios</span></div>
+  <div class="grid">
+    <div class="card"><h3>Linhas disponíveis</h3><div class="list" id="busList"></div></div>
+    <div class="card"><h3 id="routeTitle">Campus → Centro</h3><p id="routeDescription" class="small">Paradas e horários previstos</p><div class="list" id="stopList"></div><div class="notice">Os horários e previsões são exemplos do protótipo do relatório. Para uso real, seria necessária integração com os dados atualizados da universidade ou da operadora de transporte.</div></div>
+  </div>
+</section>
+<section class="page" id="privacidade">
+  <h2>Privacidade</h2><p class="small">Você decide quando e com quem compartilhar.</p>
+  <div class="card" style="max-width:720px">
+    <div class="toggle-line"><div><strong>Compartilhar localização</strong><div class="small">Permite que amigos autorizados vejam sua localização.</div></div><input class="switch" type="checkbox" id="shareToggle" checked onchange="savePrivacy()"></div>
+    <div class="toggle-line"><div><strong>Somente dentro do campus</strong><div class="small">Limita o compartilhamento ao ambiente universitário.</div></div><input class="switch" type="checkbox" id="campusToggle" checked onchange="savePrivacy()"></div>
+    <div class="toggle-line"><div><strong>Modo invisível</strong><div class="small">Oculta sua localização para os demais usuários.</div></div><input class="switch" type="checkbox" id="invisibleToggle" onchange="savePrivacy()"></div>
+    <div class="field" style="margin-top:16px"><label for="visibleTo">Visível para</label><select id="visibleTo" onchange="savePrivacy()"><option>Grupo Projeto Final</option><option>Todos os amigos</option><option>Ninguém</option></select></div>
+    <div class="toggle-line"><div><strong>Notificar quando eu chegar</strong><div class="small">Aviso demonstrativo para seus amigos.</div></div><input class="switch" type="checkbox" id="notifyToggle" onchange="savePrivacy()"></div>
+    <button class="btn secondary" style="margin-top:16px" onclick="pauseSharing()">Pausar por 1 hora</button>
+    <div class="notice">O compartilhamento é opcional e pode ser pausado. O projeto prevê consentimento explícito, possibilidade de revogação e exclusão de dados, em conformidade com a LGPD.</div>
+  </div>
+</section>
+<section class="page" id="atendimento">
+  <h2>Atendimento CampusLink</h2><p class="small">Assistente virtual para dúvidas comuns sobre amigos, ônibus e privacidade.</p>
+  <div class="card" style="max-width:720px">
+    <div class="chatbox" id="chatbox"><div class="msg bot">Olá! Bem-vindo(a) ao atendimento do CampusLink. Em que posso te ajudar?<br><br>Digite uma opção:<br>1. Ver quem está no campus<br>2. Consultar próximo ônibus<br>3. Ver horários de uma linha<br>4. Pausar localização<br>5. Informações sobre privacidade<br>6. Informar problema no aplicativo<br>7. Informar horário incorreto<br>8. Como funciona o CampusLink?<br>9. Horário de atendimento<br>10. Falar com atendente humano</div></div>
+    <div class="chat-input"><input id="chatInput" placeholder="Digite o número da opção..." inputmode="numeric" onkeydown="if(event.key==='Enter')sendChat()"><button class="btn" onclick="sendChat()">Enviar</button></div>
+  </div>
+</section>
+</main>
+<footer>CampusLink · Protótipo acadêmico para a disciplina de Tecnologia da Informação e Negócios</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const defaultFriends = [
+  {name:"Maria Lima",place:"Biblioteca central",initial:"M"},
+  {name:"João Pedro",place:"Cantina do Bloco B",initial:"J"},
+  {name:"Beatriz Alves",place:"Bloco C - sala 12",initial:"B"}
+];
+const buses = [
+  {name:"Campus → Centro",next:"19:15",eta:"em 4 min",stops:[["Portaria principal","19:15"],["Bloco C","19:18"],["Praça central","19:30"],["Centro","19:55"]]},
+  {name:"Campus → Terminal",next:"19:30",eta:"em 19 min",stops:[["Portaria principal","19:30"],["Bloco A","19:35"],["Terminal","20:00"]]},
+  {name:"Circular interno",next:"19:40",eta:"em 29 min",stops:[["Portaria principal","19:40"],["Biblioteca","19:45"],["Cantina","19:50"],["Bloco C","19:55"]]},
+  {name:"Campus → Estação",next:"20:00",eta:"em 49 min",stops:[["Portaria principal","20:00"],["Praça central","20:10"],["Estação","20:25"]]}
+];
+function load(key,fallback){try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch(e){return fallback}}
+let friends = load("campuslink_friends",defaultFriends);
+let privacy = load("campuslink_privacy",{share:true,campus:true,invisible:false,visible:"Grupo Projeto Final",notify:false});
+function showPage(page){document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.id===page));document.querySelectorAll("nav button").forEach(el=>el.classList.toggle("active",el.dataset.page===page));window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll("nav button").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page)));
+function initials(name){return name.trim().split(/\s+/).slice(0,2).map(p=>p[0]).join("").toUpperCase()}
+function renderFriends(){
+  const markup=friends.map((f,i)=>`<div class="person"><div class="avatar">${escapeHTML(f.initial||initials(f.name))}</div><div><strong>${escapeHTML(f.name)}</strong><span>${escapeHTML(f.place)}</span></div><div class="right"><span class="tag">Demonstração</span><br><button class="btn danger" style="padding:6px 9px;margin-top:7px" onclick="removeFriend(${i})" aria-label="Remover ${escapeHTML(f.name)}">Remover</button></div></div>`).join("");
+  document.getElementById("friendList").innerHTML=markup||'<div class="empty">Nenhum amigo adicionado.</div>';
+  document.getElementById("homeFriends").innerHTML=friends.slice(0,3).map(f=>`<div class="person"><div class="avatar">${escapeHTML(f.initial||initials(f.name))}</div><div><strong>${escapeHTML(f.name)}</strong><span>${escapeHTML(f.place)}</span></div></div>`).join("")||'<div class="empty">Sua lista está vazia.</div>';
+  document.getElementById("sharingCount").textContent=privacy.share&&!privacy.invisible?friends.length+" compartilhando":"compartilhamento pausado";
+}
+function addFriend(){const name=document.getElementById("friendName").value.trim(),place=document.getElementById("friendPlace").value;if(!name){toast("Digite o nome do estudante.");return}friends.push({name,place,initial:initials(name)});localStorage.setItem("campuslink_friends",JSON.stringify(friends));document.getElementById("friendName").value="";renderFriends();toast("Amigo adicionado à lista.")}
+function removeFriend(index){friends.splice(index,1);localStorage.setItem("campuslink_friends",JSON.stringify(friends));renderFriends();toast("Amigo removido.")}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderBuses(){document.getElementById("busList").innerHTML=buses.map((b,i)=>`<button class="bus" style="width:100%;text-align:left;background:white" onclick="selectBus(${i})"><div class="avatar">↗</div><div><strong>${b.name}</strong><span>Próximo: ${b.next} · ${b.eta}</span></div><span class="right tag">Ver</span></button>`).join("");selectBus(0);document.getElementById("nextBusTime").textContent=buses[0].next;document.getElementById("nextBusRoute").textContent=buses[0].name+" · "+buses[0].eta}
+function selectBus(index){const bus=buses[index];document.getElementById("routeTitle").textContent=bus.name;document.getElementById("routeDescription").textContent="Paradas e horários previstos";document.getElementById("stopList").innerHTML=bus.stops.map(s=>`<div class="row" style="padding:10px;border-bottom:1px solid var(--line)"><span>${s[0]}</span><strong>${s[1]}</strong></div>`).join("")}
+function renderPrivacy(){document.getElementById("shareToggle").checked=privacy.share;document.getElementById("campusToggle").checked=privacy.campus;document.getElementById("invisibleToggle").checked=privacy.invisible;document.getElementById("visibleTo").value=privacy.visible;document.getElementById("notifyToggle").checked=privacy.notify}
+function savePrivacy(){privacy={share:document.getElementById("shareToggle").checked,campus:document.getElementById("campusToggle").checked,invisible:document.getElementById("invisibleToggle").checked,visible:document.getElementById("visibleTo").value,notify:document.getElementById("notifyToggle").checked};localStorage.setItem("campuslink_privacy",JSON.stringify(privacy));renderFriends();toast("Preferências de privacidade salvas.")}
+function pauseSharing(){document.getElementById("shareToggle").checked=false;savePrivacy();toast("Compartilhamento pausado neste protótipo.")}
+const answers={
+ "1":"Amigos que estão compartilhando (dados fictícios): "+friends.map(f=>f.name+" — "+f.place).join("; ")+".",
+ "2":"Próximo ônibus: Campus → Centro às 19:15 (chega em 4 minutos).",
+ "3":"Linha Campus → Centro: 18:45, 19:15, 19:45, 20:15 e 21:00.",
+ "4":"Para pausar, abra Configurações > Privacidade e desative 'Compartilhar localização'. Enquanto estiver pausado, seus amigos não veem sua localização.",
+ "5":"Você escolhe com quem compartilhar e pode desligar a qualquer momento. O projeto prevê consentimento, revogação e proteção de dados conforme a LGPD.",
+ "6":"Lamentamos pelo problema. Descreva a situação para que a equipe possa analisar.",
+ "7":"Informe a linha e o horário incorreto para conferência com a operadora de transporte.",
+ "8":"O CampusLink reúne a localização compartilhada de amigos e informações dos ônibus do campus em um só aplicativo.",
+ "9":"No exemplo do projeto, o chatbot funciona 24 horas. O atendimento humano é de segunda a sexta, das 8h às 18h.",
+ "10":"Solicitação de atendimento humano registrada no protótipo. Em uma versão real, seria necessário conectar este recurso à equipe de suporte."
+};
+function sendChat(){const input=document.getElementById("chatInput"),value=input.value.trim();if(!value)return;const box=document.getElementById("chatbox");box.innerHTML+=`<div class="msg mine">${escapeHTML(value)}</div>`;const answer=answers[value]||"Não reconheci essa opção. Digite um número de 1 a 10 para consultar as opções de atendimento.";box.innerHTML+=`<div class="msg bot">${escapeHTML(answer)}</div>`;input.value="";box.scrollTop=box.scrollHeight}
+function toast(message){const el=document.getElementById("toast");el.textContent=message;el.style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>el.style.display="none",2400)}
+renderFriends();renderBuses();renderPrivacy();
+</script>
+</body>
+</html>
